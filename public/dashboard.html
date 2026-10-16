@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · Studio Brow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body class="dash">
+
+<aside class="sidebar" id="sidebar">
+  <a href="/dashboard.html" class="brand brand--dash">
+    <span class="brand__mark">SB</span>
+    <span class="brand__name">Studio&nbsp;Brow</span>
+  </a>
+
+  <nav class="sidebar__nav">
+    <a href="#overview" class="sidebar__link is-active" data-view="overview">
+      <span class="ico">📊</span> Visão geral
+    </a>
+    <a href="#agenda" class="sidebar__link" data-view="agenda">
+      <span class="ico">📅</span> Agenda
+    </a>
+    <a href="#clientes" class="sidebar__link" data-view="clientes">
+      <span class="ico">👥</span> Clientes
+    </a>
+    <a href="#servicos" class="sidebar__link" data-view="servicos">
+      <span class="ico">✂️</span> Serviços
+    </a>
+    <a href="#faturamento" class="sidebar__link" data-view="faturamento">
+      <span class="ico">💰</span> Faturamento
+    </a>
+    <a href="#mensagens" class="sidebar__link" data-view="mensagens">
+      <span class="ico">✉️</span> Mensagens
+      <span class="badge" id="badgeMsgs" hidden>0</span>
+    </a>
+  </nav>
+
+  <button class="sidebar__logout" id="logoutBtn">
+    <span class="ico">⏻</span> Sair
+  </button>
+</aside>
+
+<header class="topbar">
+  <button class="topbar__toggle" id="sidebarToggle" aria-label="Abrir menu">☰</button>
+  <h1 class="topbar__title" id="viewTitle">Visão geral</h1>
+  <div class="topbar__user">
+    <span class="avatar" id="userInitials">A</span>
+    <div>
+      <strong id="userName">Admin</strong>
+      <small id="userRole" class="muted">Administrador</small>
+    </div>
+  </div>
+</header>
+
+<main class="dash__content" id="dashContent">
+
+  <!-- ========== VISÃO GERAL ========== -->
+  <section class="view is-active" data-view="overview">
+    <div class="kpi-grid">
+      <article class="kpi">
+        <span class="kpi__label">Agendamentos hoje</span>
+        <strong class="kpi__value" id="kpiHoje">—</strong>
+        <span class="kpi__hint">Atendimentos do dia</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi__label">Pendentes</span>
+        <strong class="kpi__value" id="kpiPendentes">—</strong>
+        <span class="kpi__hint">Aguardando confirmação</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi__label">Faturamento do mês</span>
+        <strong class="kpi__value" id="kpiFaturamento">—</strong>
+        <span class="kpi__hint">Pagamentos confirmados</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi__label">Total de clientes</span>
+        <strong class="kpi__value" id="kpiClientes">—</strong>
+        <span class="kpi__hint">Base ativa</span>
+      </article>
+    </div>
+
+    <div class="dash-grid">
+      <article class="panel">
+        <header class="panel__head">
+          <h2>Agenda de hoje</h2>
+          <span class="muted small" id="hojeData"></span>
+        </header>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Hora</th><th>Cliente</th><th>Serviço</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tblAgendaHoje">
+              <tr><td colspan="4" class="muted">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <header class="panel__head">
+          <h2>Serviços mais vendidos</h2>
+        </header>
+        <ul class="rank-list" id="rankServicos">
+          <li class="muted">Carregando…</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========== AGENDA ========== -->
+  <section class="view" data-view="agenda">
+    <div class="panel">
+      <header class="panel__head">
+        <h2>Agendamentos</h2>
+        <div class="panel__actions">
+          <select id="filtroStatus" class="input">
+            <option value="">Todos os status</option>
+            <option value="agendado">Agendado</option>
+            <option value="confirmado">Confirmado</option>
+            <option value="concluido">Concluído</option>
+            <option value="cancelado">Cancelado</option>
+            <option value="faltou">Faltou</option>
+          </select>
+          <button class="btn btn--primary btn--sm" id="btnNovoAgendamento">
+            + Novo agendamento
+          </button>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Data/Hora</th><th>Cliente</th><th>Telefone</th>
+              <th>Serviço</th><th>Status</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tblAgenda">
+            <tr><td colspan="6" class="muted">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CLIENTES ========== -->
+  <section class="view" data-view="clientes">
+    <div class="panel">
+      <header class="panel__head">
+        <h2>Clientes</h2>
+        <div class="panel__actions">
+          <input type="search" id="buscaCliente" class="input"
+                 placeholder="Buscar por nome ou telefone">
+          <button class="btn btn--primary btn--sm" id="btnNovoCliente">
+            + Nova cliente
+          </button>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nome</th><th>Telefone</th><th>E-mail</th>
+              <th>Desde</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tblClientes">
+            <tr><td colspan="5" class="muted">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SERVIÇOS ========== -->
+  <section class="view" data-view="servicos">
+    <div class="panel">
+      <header class="panel__head">
+        <h2>Serviços</h2>
+        <button class="btn btn--primary btn--sm" id="btnNovoServico">
+          + Novo serviço
+        </button>
+      </header>
+      <div class="cards cards--dash" id="cardsServicos">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FATURAMENTO ========== -->
+  <section class="view" data-view="faturamento">
+    <div class="dash-grid">
+      <article class="panel">
+        <header class="panel__head"><h2>Faturamento por mês</h2></header>
+        <ul class="rank-list" id="listaFaturamento">
+          <li class="muted">Carregando…</li>
+        </ul>
+      </article>
+
+      <article class="panel">
+        <header class="panel__head"><h2>Pagamentos recentes</h2></header>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr><th>Data</th><th>Cliente</th><th>Valor</th><th>Método</th><th>Status</th></tr>
+            </thead>
+            <tbody id="tblPagamentos">
+              <tr><td colspan="5" class="muted">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========== MENSAGENS ========== -->
+  <section class="view" data-view="mensagens">
+    <div class="panel">
+      <header class="panel__head">
+        <h2>Mensagens de contato</h2>
+        <button class="btn btn--ghost btn--sm" id="btnMarcarLidas">
+          Marcar todas como lidas
+        </button>
+      </header>
+      <ul class="message-list" id="listaMensagens">
+        <li class="muted">Carregando…</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== MODAL GENÉRICO ===== -->
+<div class="modal" id="dashModal" hidden>
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box" role="dialog" aria-modal="true">
+    <button class="modal__close" data-close-modal aria-label="Fechar">✕</button>
+    <div id="dashModalBody"></div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

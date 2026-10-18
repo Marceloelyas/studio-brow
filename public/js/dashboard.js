@@ -122,9 +122,17 @@ async function loadAgenda() {
       <td>${a.service_name}</td>
       <td><span class="status status--${a.status}">${a.status}</span></td>
       <td>
-        <button class="btn btn--ghost btn--xs" data-action="status"  data-id="${a.id}">Status</button>
-        <button class="btn btn--ghost btn--xs" data-action="editar"  data-id="${a.id}">Editar</button>
-        <button class="btn btn--ghost btn--xs" data-action="excluir" data-id="${a.id}">Excluir</button>
+      
+  <button class="btn btn--ghost btn--xs" data-action="status"  data-id="${a.id}">Status</button>
+tb.querySelectorAll('[data-action="pagar"]').forEach((b) =>
+  b.addEventListener('click', () =>
+    abrirModalPagamento(b.dataset.id, Number(b.dataset.amount))
+  )
+);
+  <button class="btn btn--ghost btn--xs" data-action="pagar"   data-id="${a.id}" data-amount="${a.price || 0}">💰 Pagar</button>
+  <button class="btn btn--ghost btn--xs" data-action="editar"  data-id="${a.id}">Editar</button>
+  <button class="btn btn--ghost btn--xs" data-action="excluir" data-id="${a.id}">Excluir</button>
+
       </td>
     </tr>
   `).join('');

@@ -576,6 +576,55 @@ async function abrirModalServico(id = null) {
   });
 }
 
+/* ---------- Registrar pagamento ---------- */
+async function abrirModalPagamento(appointmentId, valorSugerido) {
+  abrirModal(`
+    <h3>Registrar pagamento</h3>
+    <p class="muted">Informe o valor e o método utilizado.</p>
+    <form id="formPagamento" class="form" style="margin-top:12px">
+      <div class="field">
+        <label>Valor (R$) *</label>
+        <input class="input" type="number" step="0.01" min="0"
+               name="amount" required value="${valorSugerido.toFixed(2)}">
+      </div>
+      <div class="field">
+        <label>Método *</label>
+        <select class="input" name="method" required>
+          <option value="pix">Pix</option>
+          <option value="dinheiro">Dinheiro</option>
+          <option value="credito">Cartão de crédito</option>
+          <option value="debito">Cartão de débito</option>
+          <option value="transferencia">Transferência</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select class="input" name="status">
+          <option value="pago" selected>Pago</option>
+          <option value="pendente">Pendente</option>
+        </select>
+      </div>
+      <button class="btn btn--primary btn--block" type="submit">Salvar pagamento</button>
+    </form>
+  `);
+
+  $('#formPagamento').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    data.appointment_id = appointmentId;
+    data.amount = Number(data.amount);
+
+    try {
+      await API.post('/payments', data);
+      fecharModal();
+      alert('Pagamento registrado com sucesso!');
+      // Se estiver na tela de faturamento, atualiza. Senão, não faz nada.
+      if (state.view === 'faturamento') loadFaturamento();
+    } catch (err) {
+      alert('Erro: ' + err.message);
+    }
+  });
+}
 /* =========================================================
    EVENTOS
    ========================================================= */

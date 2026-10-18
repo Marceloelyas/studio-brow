@@ -197,29 +197,47 @@
 
   <!-- ========== FATURAMENTO ========== -->
   <section class="view" data-view="faturamento">
-    <div class="dash-grid">
-      <article class="panel">
-        <header class="panel__head"><h2>Faturamento por mês</h2></header>
-        <ul class="rank-list" id="listaFaturamento">
-          <li class="muted">Carregando…</li>
-        </ul>
-      </article>
+  <div class="kpi-grid" style="margin-bottom:20px">
+    <article class="kpi">
+      <span class="kpi__label">Recebido no mês</span>
+      <strong class="kpi__value" id="kpiRecebido">—</strong>
+      <span class="kpi__hint">Somente pagamentos confirmados</span>
+    </article>
+    <article class="kpi">
+      <span class="kpi__label">Pendente no mês</span>
+      <strong class="kpi__value" id="kpiPendentePag">—</strong>
+      <span class="kpi__hint">Aguardando confirmação</span>
+    </article>
+    <article class="kpi">
+      <span class="kpi__label">Total do mês</span>
+      <strong class="kpi__value" id="kpiTotalMes">—</strong>
+      <span class="kpi__hint">Recebido + pendente</span>
+    </article>
+  </div>
 
-      <article class="panel">
-        <header class="panel__head"><h2>Pagamentos recentes</h2></header>
-        <div class="table-wrap">
-          <table class="table">
-            <thead>
-              <tr><th>Data</th><th>Cliente</th><th>Valor</th><th>Método</th><th>Status</th></tr>
-            </thead>
-            <tbody id="tblPagamentos">
-              <tr><td colspan="5" class="muted">Carregando…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
-    </div>
-  </section>
+  <div class="dash-grid">
+    <article class="panel">
+      <header class="panel__head"><h2>Faturamento por mês</h2></header>
+      <ul class="rank-list" id="listaFaturamento">
+        <li class="muted">Carregando…</li>
+      </ul>
+    </article>
+
+    <article class="panel">
+      <header class="panel__head"><h2>Pagamentos recentes</h2></header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr><th>Data</th><th>Cliente</th><th>Valor</th><th>Método</th><th>Status</th></tr>
+          </thead>
+          <tbody id="tblPagamentos">
+            <tr><td colspan="5" class="muted">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </div>
+</section>
 
   <!-- ========== MENSAGENS ========== -->
   <section class="view" data-view="mensagens">

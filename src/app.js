@@ -1,8 +1,10 @@
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 
 const routes = require('./routes');
+const db = require('./config/db');
 const { notFound, errorHandler } = require('./middlewares/errors');
 
 const app = express();
@@ -11,8 +13,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// -------- Sessão --------
+// -------- Sessão (armazenada no PostgreSQL) --------
 app.use(session({
+  store: new pgSession({
+    pool: db.pool,
+    tableName: 'user_sessions',
+    createTableIfMissing: true,
+  }),
   secret: process.env.SESSION_SECRET || 'troque-esta-chave',
   resave: false,
   saveUninitialized: false,
@@ -31,7 +38,7 @@ app.use('/api', routes);
 const publicDir = path.join(__dirname, '..', 'public');
 app.use(express.static(publicDir));
 
-// SPA fallback para o site público (apenas rotas não-API)
+// Fallback para o site público (apenas rotas não-API)
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(publicDir, 'index.html'));
 });

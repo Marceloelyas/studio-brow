@@ -1,4 +1,4 @@
-kconst path = require('path');
+const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
@@ -9,11 +9,11 @@ const { notFound, errorHandler } = require('./middlewares/errors');
 
 const app = express();
 
-// -------- Body parsing --------
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// -------- Sessão (armazenada no PostgreSQL) --------
+// Sessão no PostgreSQL
 app.use(session({
   store: new pgSession({
     pool: db.pool,
@@ -31,19 +31,18 @@ app.use(session({
   },
 }));
 
-// -------- API --------
+// API
 app.use('/api', routes);
 
-// -------- Frontend estático --------
+// Frontend estático
 const publicDir = path.join(__dirname, '..', 'public');
 app.use(express.static(publicDir));
 
-// Fallback para o site público (apenas rotas não-API)
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 
-// -------- Erros --------
+// Erros
 app.use(notFound);
 app.use(errorHandler);
 

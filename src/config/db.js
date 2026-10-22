@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // Necessário para o Render
+    rejectUnauthorized: false // Obrigatório para o Render
   },
   max: 10,
   idleTimeoutMillis: 30000,
@@ -16,5 +16,5 @@ pool.on('error', (err) => {
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
-  pool, // Exporte o pool para ser usado pelo connect-pg-simple
+  pool, // Exporta o pool para o connect-pg-simple
 };

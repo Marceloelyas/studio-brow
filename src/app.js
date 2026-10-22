@@ -1,4 +1,4 @@
-const path = require('path');
+kconst path = require('path');
 const express = require('express');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);

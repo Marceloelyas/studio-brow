@@ -18,7 +18,7 @@ app.use(session({
   store: new pgSession({
     pool: db.pool,
     tableName: 'user_sessions',
-    createIfMissing: true,
+    createTableIfMissing: true,
   }),
   secret: process.env.SESSION_SECRET || 'troque-esta-chave',
   resave: false,

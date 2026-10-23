@@ -122,23 +122,19 @@ async function loadAgenda() {
       <td>${a.service_name}</td>
       <td><span class="status status--${a.status}">${a.status}</span></td>
       <td>
-      
-  <button class="btn btn--ghost btn--xs" data-action="status"  data-id="${a.id}">Status</button>
-tb.querySelectorAll('[data-action="pagar"]').forEach((b) =>
-  b.addEventListener('click', () =>
-    abrirModalPagamento(b.dataset.id, Number(b.dataset.amount))
-  )
-);
-  <button class="btn btn--ghost btn--xs" data-action="pagar"   data-id="${a.id}" data-amount="${a.price || 0}">💰 Pagar</button>
-  <button class="btn btn--ghost btn--xs" data-action="editar"  data-id="${a.id}">Editar</button>
-  <button class="btn btn--ghost btn--xs" data-action="excluir" data-id="${a.id}">Excluir</button>
-
+        <button class="btn btn--ghost btn--xs" data-action="status"  data-id="${a.id}">Status</button>
+        <button class="btn btn--ghost btn--xs" data-action="pagar"   data-id="${a.id}" data-amount="${a.price || 0}">💰 Pagar</button>
+        <button class="btn btn--ghost btn--xs" data-action="editar"  data-id="${a.id}">Editar</button>
+        <button class="btn btn--ghost btn--xs" data-action="excluir" data-id="${a.id}">Excluir</button>
       </td>
     </tr>
   `).join('');
 
   tb.querySelectorAll('[data-action="status"]').forEach((b) =>
     b.addEventListener('click', () => abrirModalStatus(b.dataset.id))
+  );
+  tb.querySelectorAll('[data-action="pagar"]').forEach((b) =>
+    b.addEventListener('click', () => abrirModalPagamento(b.dataset.id, Number(b.dataset.amount)))
   );
   tb.querySelectorAll('[data-action="editar"]').forEach((b) =>
     b.addEventListener('click', () => abrirModalAgendamento(b.dataset.id))
@@ -153,7 +149,6 @@ tb.querySelectorAll('[data-action="pagar"]').forEach((b) =>
     })
   );
 }
-
 /* =========================================================
    CLIENTES
    ========================================================= */
@@ -583,7 +578,6 @@ async function abrirModalServico(id = null) {
     loadServicos();
   });
 }
-
 /* ---------- Registrar pagamento ---------- */
 async function abrirModalPagamento(appointmentId, valorSugerido) {
   abrirModal(`
@@ -593,7 +587,7 @@ async function abrirModalPagamento(appointmentId, valorSugerido) {
       <div class="field">
         <label>Valor (R$) *</label>
         <input class="input" type="number" step="0.01" min="0"
-               name="amount" required value="${valorSugerido.toFixed(2)}">
+               name="amount" required value="${Number(valorSugerido || 0).toFixed(2)}">
       </div>
       <div class="field">
         <label>Método *</label>

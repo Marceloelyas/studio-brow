@@ -126,6 +126,7 @@ async function loadAgenda() {
         <button class="btn btn--ghost btn--xs" data-action="pagar"   data-id="${a.id}" data-amount="${a.price || 0}">💰 Pagar</button>
         <button class="btn btn--ghost btn--xs" data-action="editar"  data-id="${a.id}">Editar</button>
         <button class="btn btn--ghost btn--xs" data-action="excluir" data-id="${a.id}">Excluir</button>
+        <button class="btn btn--ghost btn--xs" data-action="whatsapp" data-id="${a.id}" data-phone="${a.client_phone}" data-name="${a.client_name}" data-service="${a.service_name}" data-date="${a.scheduled_at}">💬 Zap</button>
       </td>
     </tr>
   `).join('');
@@ -138,6 +139,9 @@ async function loadAgenda() {
   );
   tb.querySelectorAll('[data-action="editar"]').forEach((b) =>
     b.addEventListener('click', () => abrirModalAgendamento(b.dataset.id))
+  );
+  tb.querySelectorAll('[data-action="whatsapp"]').forEach((b) =>
+    b.addEventListener('click', () => enviarWhatsApp(b.dataset.phone, b.dataset.name, b.dataset.service, b.dataset.date))
   );
   tb.querySelectorAll('[data-action="excluir"]').forEach((b) =>
     b.addEventListener('click', async () => {
@@ -252,6 +256,7 @@ async function loadFaturamento() {
           <td>${fmtBRL(p.amount)}</td>
           <td>${p.method}</td>
           <td><span class="status status--${p.status}">${p.status}</span></td>
+	  <td>${p.status === 'pago' ? `<button class="btn btn--ghost btn--xs" onclick="window.open('/api/payments/${p.id}/receipt', '_blank')">📄 Recibo</button>` : '—'}</td>
         </tr>
       `).join('')
     : `<tr><td colspan="5" class="muted">Nenhum pagamento registrado.</td></tr>`;
@@ -625,8 +630,35 @@ async function abrirModalPagamento(appointmentId, valorSugerido) {
     } catch (err) {
       alert('Erro: ' + err.message);
     }
+/* ---------- Enviar WhatsApp ---------- */
+function enviarWhatsApp(phone, clientName, serviceName, dateTime) {
+  if (!phone) {
+    alert('Esta cliente não tem telefone cadastrado.');
+    return;
+  }
+  
+  // Limpa o telefone (remove parênteses, traços e espaços)
+  let cleanPhone = phone.replace(/\D/g, '');
+  // Adiciona o código do Brasil (55) se não tiver
+  if (cleanPhone.length <= 11) cleanPhone = '55' + cleanPhone;
+
+  const dataFormatada = new Date(dateTime).toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
   });
+
+  const msg = encodeURIComponent(
+    `Olá, ${clientName}! Tudo bem? 💖\n\n` +
+    `Passando para confirmar seu horário no Studio Brow:\n` +
+    `✨ *Serviço:* ${serviceName}\n` +
+    `📅 *Data:* ${dataFormatada}\n\n` +
+    `Podemos confirmar? Se precisar remarcar, me avise por aqui!`
+  );
+
+  window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+}  });
 }
+
+
 /* =========================================================
    EVENTOS
    ========================================================= */

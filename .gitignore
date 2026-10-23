@@ -28,3 +28,5 @@ build/
 
 # Docker
 pgdata/
+*.deb
+*.deb

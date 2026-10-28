@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minha Conta · Studio Brow</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+  .client-wrapper { max-width: 600px; margin: 40px auto; padding: 20px; }
+  .card { background: #12121b; padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,.08); margin-bottom: 20px;}
+  .hidden { display: none !important; }
+</style>
+</head>
+<body class="dash" style="display:block; background:#0b0b0f; color:#fff;">
+
+<div class="client-wrapper">
+  <a href="/" class="brand" style="margin-bottom:30px; display:inline-flex;">
+    <span class="brand__mark">SB</span>
+    <span class="brand__name">Studio&nbsp;Brow</span>
+  </a>
+
+  <!-- Tela de Login -->
+  <div id="loginScreen" class="card">
+    <h2>Acesse sua conta</h2>
+    <p class="muted">Digite seu telefone para ver seus agendamentos e alterar seus dados.</p>
+    <form id="loginForm" class="form" style="margin-top:20px;">
+      <div class="field">
+        <label>Telefone / WhatsApp</label>
+        <input type="tel" id="phone" class="input" placeholder="(11) 99999-9999" required>
+      </div>
+      <button type="submit" class="btn btn--primary btn--block" id="btnLogin">Entrar</button>
+      <p id="loginError" class="error center"></p>
+    </form>
+  </div>
+
+  <!-- Tela Logada -->
+  <div id="clientScreen" class="hidden">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <h2>Olá, <span id="clientName"></span>!</h2>
+        <button id="btnLogout" class="btn btn--ghost btn--sm">Sair</button>
+      </div>
+      
+      <h3>Meus Dados</h3>
+      <form id="profileForm" class="form" style="margin-top:15px;">
+        <div class="field">
+          <label>Telefone</label>
+          <input type="tel" id="editPhone" class="input" required>
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" id="editEmail" class="input">
+        </div>
+        <div class="field">
+          <label>Data de Nascimento</label>
+          <input type="date" id="editBirth" class="input">
+        </div>
+        <button type="submit" class="btn btn--primary">Salvar Alterações</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Meus Agendamentos</h3>
+      <div class="table-wrap" style="margin-top:15px;">
+        <table class="table">
+          <thead><tr><th>Data</th><th>Serviço</th><th>Status</th></tr></thead>
+          <tbody id="tblMyAppointments"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+
+async function api(path, opts = {}) {
+  const res = await fetch(`/api/client-portal${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    ...opts
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Erro na requisição');
+  }
+  return res.json();
+}
+
+// Login
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('#btnLogin');
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  $('#loginError').textContent = '';
+
+  try {
+    await api('/login', { method: 'POST', body: JSON.stringify({ phone: $('#phone').value }) });
+    loadClientData();
+  } catch (err) {
+    $('#loginError').textContent = err.message;
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+});
+
+// Logout
+$('#btnLogout').addEventListener('click', async () => {
+  // Reaproveita a rota de logout que já existe no sistema
+  await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+  window.location.reload();
+});
+
+// Carregar dados da cliente
+async function loadClientData() {
+  try {
+    const me = await api('/me');
+    $('#clientName').textContent = me.name.split(' ')[0];
+    $('#editPhone').value = me.phone;
+    $('#editEmail').value = me.email || '';
+    $('#editBirth').value = me.birth_date ? me.birth_date.slice(0, 10) : '';
+
+    const appts = await api('/appointments');
+    $('#tblMyAppointments').innerHTML = appts.length ? appts.map(a => `
+      <tr>
+        <td>${new Date(a.scheduled_at).toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'})}</td>
+        <td>${a.service_name}</td>
+        <td><span class="status status--${a.status}">${a.status}</span></td>
+      </tr>
+    `).join('') : '<tr><td colspan="3" class="muted">Nenhum agendamento encontrado.</td></tr>';
+
+    $('#loginScreen').classList.add('hidden');
+    $('#clientScreen').classList.remove('hidden');
+  } catch (err) {
+    // Se der 401, significa que não está logada, então mostra a tela de login
+    $('#loginScreen').classList.remove('hidden');
+    $('#clientScreen').classList.add('hidden');
+  }
+}
+
+// Atualizar perfil
+$('#profileForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    await api('/me', {
+      method: 'PUT',
+      body: JSON.stringify({
+        phone: $('#editPhone').value,
+        email: $('#editEmail').value,
+        birth_date: $('#editBirth').value
+      })
+    });
+    alert('Dados atualizados com sucesso!');
+  } catch (err) {
+    alert('Erro: ' + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Salvar Alterações';
+  }
+});
+
+// Tenta carregar os dados logo ao abrir a página (se já tiver sessão ativa)
+loadClientData();
+</script>
+</body>
+</html>

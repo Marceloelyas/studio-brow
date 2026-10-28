@@ -8,5 +8,6 @@ router.use('/payments', require('./payments.routes'));
 router.use('/dashboard', require('./dashboard.routes'));
 router.use('/professionals', require('./professionals.routes'));
 router.use('/contact-messages', require('./contact.routes'));
+router.use('/client-portal', require('./client-portal.routes'));
 
 module.exports = router;
